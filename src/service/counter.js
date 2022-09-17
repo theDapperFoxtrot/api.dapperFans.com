@@ -1,7 +1,5 @@
 const counter = { counter: 0 };
 
-const users = { 1: { user: "john", password: "doe" } };
-users["2"] = { user: "jane", password: "bro" };
 const create = () => {};
 
 const read = () => {
