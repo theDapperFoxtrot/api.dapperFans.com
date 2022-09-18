@@ -1,8 +1,8 @@
 const express = require("express");
-const dotenv = require("dotenv").config();
+require("dotenv").config({ debug: true });
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const axios = require("axios");
+const fetch = require("node-fetch");
 
 const app = express();
 const port = 3000;
@@ -10,26 +10,25 @@ const port = 3000;
 app.use(bodyParser.json());
 app.use(cors());
 
-// const get_token = async () => {
-//   let response = await axios({
-//     method: "post",
-//     url: "https://id.twitch.tv/oauth2/token",
-//     "Content-Type": "application/x-www-form-urlencoded",
-//     data: {
-//       client_id: process.env.client_id,
-//       client_secret: process.env.client_secret,
-//       code: "",
-//       grant_type: "authorization_code",
-//       redirect_uri: "http://localhost:3000/twitch",
-//     },
-//   });
-// };
-
-// get_token();
-
-app.get("/twitch", (req, res) => {
+app.get("/twitch", async (req, res) => {
   res.send("Welcome to the Twitch thing!");
-  console.log(req);
+  let auth_code = req.query.code;
+
+  let code = auth_code;
+
+  const params = new URLSearchParams();
+  params.append("client_id", process.env.Client_ID);
+  params.append("client_secret", process.env.Client_Secret);
+  params.append("code", `${code}`);
+  params.append("grant_type", "authorization_code");
+  params.append("redirect_uri", "http://localhost:3000/twitch");
+
+  try {
+    let response = await fetch(`https://id.twitch.tv/oauth2/token`, { method: "POST", body: params });
+    console.log(response);
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 app.listen(port, () => {
